@@ -6,6 +6,10 @@ services:
       context: ../monolith
       dockerfile: Dockerfile
     container_name: hotelio-monolith
+    depends_on:
+      monolith-db:
+        condition: service_healthy
+        restart: true
     ports:
       - "8084:8080"
     networks:
@@ -28,7 +32,12 @@ services:
       - monolith-db-data:/var/lib/postgresql/data
     networks:
       - hotelio-net
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 volumes:
   monolith-db-data:
 
