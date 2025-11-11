@@ -1,0 +1,56 @@
+@startuml microservice main component
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "Пользователь", "")
+Enterprise_Boundary(hotelio, "Hotelio") {
+    System_Boundary(booking, "Сервис бронирования") {
+        Component(booking_api, "API Сервиса бронирования", "Java", "Принимает REST запросы")
+        Component(booking_worker, "Воркер Сервиса бронирования", "Java", "Асинхронно обрабатывает бронирования")
+        ComponentDb(booking_db, "База данных")
+    }
+    System_Boundary(users, "Сервис пользователей") {
+        Component(users_api, "API Сервиса пользователей", "Java", "Принимает REST и gRPC запросы")
+        ComponentDb(users_db, "База данных")
+    }
+    System_Boundary(hotels, "Сервис отелей") {
+        Component(hotels_api, "API Сервиса отелей", "Java", "Принимает REST и gRPC запросы")
+        ComponentDb(hotels_db, "База данных")
+    }
+    System_Boundary(reviews, "Сервис отзывов") {
+        Component(reviews_api, "API Сервиса отзывов", "Java", "Принимает REST и gRPC запросы")
+        ComponentDb(reviews_db, "База данных")
+    }
+    System_Boundary(promos, "Сервис промоакций") {
+        Component(promos_api, "API Сервиса промоакций", "Java", "Принимает REST и gRPC запросы")
+        ComponentDb(promos_db, "База данных")
+    }
+    System(bff, "BFF")
+    SystemQueue(broker, "Брокер")
+}
+
+Rel(user, bff, "Делает запросы", "REST")
+Rel(bff, users_api, "Операции с пользователями", "REST")
+Rel(bff, booking_api, "Операции с бронированием", "REST")
+Rel(bff, hotels_api, "Операции с отелями", "REST")
+Rel(bff, reviews_api, "Операции с отзывами", "REST")
+Rel(bff, promos_api, "Операции с промо", "REST")
+Rel(booking_api, broker, "Инициализация бронирования")
+Rel(booking_worker, broker, "Передача изменений по бронирования")
+Rel(booking_worker, users_api, "Получение информации по пользователям", "gRPC")
+Rel(booking_worker, hotels_api, "Получение информации по отелям", "gRPC")
+Rel(booking_worker, reviews_api, "Получение информации по отзывам", "gRPC")
+Rel(booking_worker, promos_api, "Получение информации по промо", "gRPC")
+
+Rel(booking_api, booking_db, "Пишет/читает")
+Rel(booking_worker, booking_db, "Пишет/читает")
+
+Rel(users_api, users_db, "Пишет/читает")
+Rel(hotels_api, hotels_db, "Пишет/читает")
+Rel(reviews_api, reviews_db, "Пишет/читает")
+Rel(promos_api, promos_db, "Пишет/читает")
+
+
+@enduml

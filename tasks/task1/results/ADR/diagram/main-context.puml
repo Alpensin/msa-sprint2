@@ -1,0 +1,30 @@
+@startuml microservice broker context
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "Пользователь", "")
+Enterprise_Boundary(hotelio, "Hotelio") {
+    System(booking, "Сервис бронирования")
+    System(users, "Сервис пользователей")
+    System(hotels, "Сервис отелей")
+    System(reviews, "Сервис отзывов")
+    System(promos, "Сервис промоакций")
+    System(bff, "BFF")
+    SystemQueue(broker, "Брокер")
+}
+
+Rel(user, bff, "Делает запросы", "REST")
+Rel(bff, users, "Операции с пользователями", "REST")
+Rel(bff, booking, "Операции с бронированием", "REST")
+Rel(bff, hotels, "Операции с отелями", "REST")
+Rel(bff, reviews, "Операции с отзывами", "REST")
+Rel(bff, promos, "Операции с промо", "REST")
+Rel(booking, broker, "Передача изменений по бронированию")
+Rel(booking, users, "Получение информации по пользователям", "gRPC")
+Rel(booking, hotels, "Получение информации по отелям", "gRPC")
+Rel(booking, reviews, "Получение информации по отзывам", "gRPC")
+Rel(booking, promos, "Получение информации по промо", "gRPC")
+
+@enduml

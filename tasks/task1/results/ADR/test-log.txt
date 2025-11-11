@@ -1,0 +1,111 @@
+➜  msa-sprint2 git:(main) ✗ make start-service
+cd tasks/task1 && docker compose down -v && docker compose up -d --build
+WARN[0000] /home/alpen/projects/msa-sprint2/tasks/task1/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] Running 3/2
+ ✔ Container hotelio-monolith     Removed                                                                                                                                                                                                                                  0.2s 
+ ✔ Container hotelio-db           Removed                                                                                                                                                                                                                                  0.1s 
+ ✔ Volume task1_monolith-db-data  Removed                                                                                                                                                                                                                                  0.0s 
+WARN[0000] /home/alpen/projects/msa-sprint2/tasks/task1/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] Building 0.2s (9/9) FINISHED                                                                                                                                                                                                                                 docker:default
+ => [monolith internal] load build definition from Dockerfile                                                                                                                                                                                                              0.0s
+ => => transferring dockerfile: 168B                                                                                                                                                                                                                                       0.0s
+ => [monolith internal] load metadata for docker.io/library/openjdk:17.0.2-jdk-slim                                                                                                                                                                                        0.2s
+ => [monolith internal] load .dockerignore                                                                                                                                                                                                                                 0.0s
+ => => transferring context: 2B                                                                                                                                                                                                                                            0.0s
+ => [monolith 1/3] FROM docker.io/library/openjdk:17.0.2-jdk-slim@sha256:aaa3b3cb27e3e520b8f116863d0580c438ed55ecfa0bc126b41f68c3f62f9774                                                                                                                                  0.0s
+ => [monolith internal] load build context                                                                                                                                                                                                                                 0.0s
+ => => transferring context: 50B                                                                                                                                                                                                                                           0.0s
+ => CACHED [monolith 2/3] WORKDIR /app                                                                                                                                                                                                                                     0.0s
+ => CACHED [monolith 3/3] COPY hotelio-monolith-1.0.0.jar app.jar                                                                                                                                                                                                          0.0s
+ => [monolith] exporting to image                                                                                                                                                                                                                                          0.0s
+ => => exporting layers                                                                                                                                                                                                                                                    0.0s
+ => => writing image sha256:c4f3e8ad7d850c47e2101eed99e06521b3eaf9ecee7c02da294cd84675406ce2                                                                                                                                                                               0.0s
+ => => naming to docker.io/library/task1-monolith                                                                                                                                                                                                                          0.0s
+ => [monolith] resolving provenance for metadata file                                                                                                                                                                                                                      0.0s
+[+] Running 3/3
+ ✔ Volume "task1_monolith-db-data"  Created                                                                                                                                                                                                                                0.0s 
+ ✔ Container hotelio-db             Healthy                                                                                                                                                                                                                                5.7s 
+ ✔ Container hotelio-monolith       Started                                                                                                                                                                                                                                5.8s 
+➜  msa-sprint2 git:(main) ✗ make test         
+cd test && docker build -t hotelio-tester .
+[+] Building 0.2s (11/11) FINISHED                                                                                                                                                                                                                               docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                                                                                       0.0s
+ => => transferring dockerfile: 392B                                                                                                                                                                                                                                       0.0s
+ => [internal] load metadata for docker.io/library/debian:bullseye-slim                                                                                                                                                                                                    0.2s
+ => [internal] load .dockerignore                                                                                                                                                                                                                                          0.0s
+ => => transferring context: 2B                                                                                                                                                                                                                                            0.0s
+ => [1/6] FROM docker.io/library/debian:bullseye-slim@sha256:75e0b7a6158b4cc911d4be07d9f6b8a65254eb8c58df14023c3da5c462335593                                                                                                                                              0.0s
+ => [internal] load build context                                                                                                                                                                                                                                          0.0s
+ => => transferring context: 103B                                                                                                                                                                                                                                          0.0s
+ => CACHED [2/6] WORKDIR /app                                                                                                                                                                                                                                              0.0s
+ => CACHED [3/6] RUN apt-get update && apt-get install -y     curl     postgresql-client     bash     && rm -rf /var/lib/apt/lists/*                                                                                                                                       0.0s
+ => CACHED [4/6] COPY wait-for-it.sh /usr/local/bin/wait-for-it                                                                                                                                                                                                            0.0s
+ => CACHED [5/6] COPY init-fixtures.sql regress.sh ./                                                                                                                                                                                                                      0.0s
+ => CACHED [6/6] RUN chmod +x /usr/local/bin/wait-for-it regress.sh                                                                                                                                                                                                        0.0s
+ => exporting to image                                                                                                                                                                                                                                                     0.0s
+ => => exporting layers                                                                                                                                                                                                                                                    0.0s
+ => => writing image sha256:0d20f26fb944bef46d7ba91dbc57e386dfc07e5948c5c223d3cfc8d3f178a01a                                                                                                                                                                               0.0s
+ => => naming to docker.io/library/hotelio-tester                                                                                                                                                                                                                          0.0s
+docker run --rm --network=host\
+  -e DB_HOST=127.0.0.1 \
+  -e DB_PORT=5432 \
+  -e DB_NAME=hotelio \
+  -e DB_USER=hotelio \
+  -e DB_PASSWORD=hotelio \
+  -e API_URL=http://127.0.0.1:8084 \
+  hotelio-tester
+🏁 Регрессионный тест до миграции Hotelio
+🧪 Проверка подключения к БД...
+🧪 Загрузка фикстур...
+DELETE 0
+DELETE 0
+DELETE 0
+DELETE 0
+DELETE 0
+INSERT 0 4
+INSERT 0 3
+INSERT 0 12
+INSERT 0 3
+INSERT 0 2
+🧪 Выполнение HTTP-тестов...
+
+Тесты пользователей...
+✅ Получение test-user-1 по ID работает
+✅ Статус test-user-1: ACTIVE
+✅ test-user-1 в блэклисте
+✅ test-user-1 активен
+✅ test-user-1 не авторизован (в блэклисте)
+✅ test-user-3 — VIP-пользователь
+✅ test-user-2 авторизован
+
+Тесты отелей...
+✅ test-hotel-1 получен по ID
+✅ test-hotel-1 работает
+✅ test-hotel-3 не работает
+✅ test-hotel-2 полностью забронирован
+✅ Поиск отелей в Сеуле работает
+✅ Топ-отели в Сеуле загружены
+
+Тесты ревью...
+✅ Отзывы test-hotel-1 найдены
+✅ test-hotel-1 признан надёжным
+✅ test-hotel-3 НЕ признан надёжным (ожидаемо)
+
+Тесты промокодов...
+✅ Промокод TESTCODE1 найден
+✅ VIP-промо доступен VIP
+✅ VIP-промо недоступен обычному
+✅ Обычный промо доступен
+✅ Истекший промо недоступен
+✅ POST /validate промо прошёл
+
+Тесты бронирования...
+✅ Все бронирования получены
+✅ Бронирования test-user-2 найдены
+✅ Бронирование прошло (без промо)
+✅ Бронирование с промо прошло
+✅ Отклонено: неактивный пользователь
+✅ Отклонено: недоверенный отель
+✅ Отклонено: отель полностью забронирован
+✅ Все HTTP-тесты пройдены!
+➜  msa-sprint2 git:(main) ✗ 
