@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+grpc:
+  server:
+    port: 9090
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/booking_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+logging:
+  level:
+    com.hotelio.booking: DEBUG
+    org.hibernate.SQL: DEBUG

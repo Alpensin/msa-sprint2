@@ -1,7 +1,7 @@
 package com.hotelio.monolith.controller;
 
 import com.hotelio.monolith.entity.Booking;
-import com.hotelio.monolith.service.BookingService;
+import com.hotelio.monolith.service.BookingGrpcClientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +11,9 @@ import java.util.List;
 @RequestMapping("/api/bookings")
 public class BookingController {
 
-    private final BookingService bookingService;
+    private final BookingGrpcClientService bookingService;
 
-    public BookingController(BookingService bookingService) {
+    public BookingController(BookingGrpcClientService bookingService) {
         this.bookingService = bookingService;
     }
 
