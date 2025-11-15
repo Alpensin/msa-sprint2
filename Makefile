@@ -11,5 +11,11 @@ test:
 	  -e API_URL=http://127.0.0.1:8084 \
 	  hotelio-tester
 
-start-service:
+start-service-task1:
 	cd tasks/task1 && docker compose down -v && docker compose up -d --build
+
+start-service-task2:
+	cd tasks/task2 && docker compose down -v && docker compose up -d --build
+
+stop-service-task2:
+	cd tasks/task2 && docker compose down -v
