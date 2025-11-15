@@ -3,6 +3,10 @@ package com.hotelio.monolith.service;
 import com.hotelio.monolith.entity.Booking;
 import com.hotelio.proto.booking.BookingProto;
 import com.hotelio.proto.booking.BookingServiceGrpc;
+import com.hotelio.proto.booking.BookingRequest;
+import com.hotelio.proto.booking.BookingResponse;
+import com.hotelio.proto.booking.BookingListRequest;
+import com.hotelio.proto.booking.BookingListResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +33,11 @@ public class BookingGrpcClientService {
         try {
             log.info("Fetching bookings via gRPC: userId={}", userId);
 
-            BookingProto.BookingListRequest request = BookingProto.BookingListRequest.newBuilder()
+            BookingListRequest request = BookingListRequest.newBuilder()
                     .setUserId(userId != null ? userId : "")
                     .build();
 
-            BookingProto.BookingListResponse response = bookingServiceStub.listBookings(request);
+            BookingListResponse response = bookingServiceStub.listBookings(request);
 
             return response.getBookingsList().stream()
                     .map(this::convertToBooking)
@@ -49,13 +53,13 @@ public class BookingGrpcClientService {
         try {
             log.info("Creating booking via gRPC: userId={}, hotelId={}, promoCode={}", userId, hotelId, promoCode);
 
-            BookingProto.BookingRequest request = BookingProto.BookingRequest.newBuilder()
+            BookingRequest request = BookingRequest.newBuilder()
                     .setUserId(userId)
                     .setHotelId(hotelId)
                     .setPromoCode(promoCode != null ? promoCode : "")
                     .build();
 
-            BookingProto.BookingResponse response = bookingServiceStub.createBooking(request);
+            BookingResponse response = bookingServiceStub.createBooking(request);
 
             return convertToBooking(response);
 
@@ -65,7 +69,7 @@ public class BookingGrpcClientService {
         }
     }
 
-    private Booking convertToBooking(BookingProto.BookingResponse protoBooking) {
+    private Booking convertToBooking(BookingResponse protoBooking) {
         Booking booking = new Booking();
         booking.setId(Long.valueOf(protoBooking.getId()));
         booking.setUserId(protoBooking.getUserId());

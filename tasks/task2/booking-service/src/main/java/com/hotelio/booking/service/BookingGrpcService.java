@@ -4,6 +4,10 @@ import com.hotelio.booking.entity.BookingEntity;
 import com.hotelio.booking.repository.BookingRepository;
 import com.hotelio.proto.booking.BookingProto;
 import com.hotelio.proto.booking.BookingServiceGrpc;
+import com.hotelio.proto.booking.BookingRequest;
+import com.hotelio.proto.booking.BookingResponse;
+import com.hotelio.proto.booking.BookingListRequest;
+import com.hotelio.proto.booking.BookingListResponse;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -30,8 +34,8 @@ public class BookingGrpcService extends BookingServiceGrpc.BookingServiceImplBas
     }
 
     @Override
-    public void createBooking(BookingProto.BookingRequest request,
-                            StreamObserver<BookingProto.BookingResponse> responseObserver) {
+    public void createBooking(BookingRequest request,
+                            StreamObserver<BookingResponse> responseObserver) {
         try {
             log.info("Creating booking via gRPC: userId={}, hotelId={}, promoCode={}",
                     request.getUserId(), request.getHotelId(), request.getPromoCode());
@@ -44,7 +48,7 @@ public class BookingGrpcService extends BookingServiceGrpc.BookingServiceImplBas
             );
 
             // Convert to response
-            BookingProto.BookingResponse response = BookingProto.BookingResponse.newBuilder()
+            BookingResponse response = BookingResponse.newBuilder()
                     .setId(String.valueOf(booking.getId()))
                     .setUserId(booking.getUserId())
                     .setHotelId(booking.getHotelId())
@@ -67,8 +71,8 @@ public class BookingGrpcService extends BookingServiceGrpc.BookingServiceImplBas
     }
 
     @Override
-    public void listBookings(BookingProto.BookingListRequest request,
-                           StreamObserver<BookingProto.BookingListResponse> responseObserver) {
+    public void listBookings(BookingListRequest request,
+                           StreamObserver<BookingListResponse> responseObserver) {
         try {
             log.info("Listing bookings via gRPC: userId={}", request.getUserId());
 
@@ -79,11 +83,11 @@ public class BookingGrpcService extends BookingServiceGrpc.BookingServiceImplBas
                 bookings = bookingRepository.findByUserId(request.getUserId());
             }
 
-            BookingProto.BookingListResponse.Builder responseBuilder =
-                    BookingProto.BookingListResponse.newBuilder();
+            BookingListResponse.Builder responseBuilder =
+                    BookingListResponse.newBuilder();
 
             for (BookingEntity booking : bookings) {
-                BookingProto.BookingResponse bookingResponse = BookingProto.BookingResponse.newBuilder()
+                BookingResponse bookingResponse = BookingResponse.newBuilder()
                         .setId(String.valueOf(booking.getId()))
                         .setUserId(booking.getUserId())
                         .setHotelId(booking.getHotelId())
